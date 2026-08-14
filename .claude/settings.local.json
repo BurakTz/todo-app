@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -rf \"./@\")",
+      "Bash(./.node/bin/npx.cmd shadcn@latest add button --yes --overwrite)",
+      "Bash(curl -s \"https://ui.shadcn.com/r/styles/radix-rhea/button.json\")"
+    ]
+  }
+}
