@@ -22,9 +22,9 @@ export function AppSidebar() {
     return (
         <Sidebar>
             <SidebarHeader>
-                <div className="flex items-center gap-2 px-2 py-2">
+                <div className="flex items-center gap-2 px-2 py-2 ">
                     <img src="/todologo.jpg" alt="Logo" className="h-8 w-8 rounded-md" />
-                    <span className="text-2xl font-medium tracking-tighter text-[#111111]">
+                    <span className="text-2xl font-medium tracking-tighter text-[#111111] text-foreground">
   monotask
 </span>
                 </div>
