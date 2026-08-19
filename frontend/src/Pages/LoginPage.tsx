@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom"
 
 import {
     Card,
-    CardAction,
     CardContent,
     CardDescription,
     CardFooter,
@@ -54,8 +53,16 @@ function LoginPage() {
                 </form>
             </CardContent>
             <CardFooter className="flex-col gap-2">
-                <Button type="button" className="w-full" onClick={() => navigate("/home")}>
+                <Button type="submit" className="w-full">
                     Giriş Yap
+                </Button>
+                <Button
+                    type="button"
+                    variant="link"
+                    className="w-full"
+                    onClick={() => navigate("/register")}
+                >
+                    Hesabın yok mu? Kayıt ol
                 </Button>
             </CardFooter>
         </Card>

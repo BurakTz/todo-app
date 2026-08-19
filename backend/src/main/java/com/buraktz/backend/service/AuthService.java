@@ -25,4 +25,15 @@ public class AuthService {
         user.setPasswordHash(BCrypt.hashpw(rawPassword, BCrypt.gensalt()));
         return userRepository.save(user);
     }
+
+    public User login(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        if (!BCrypt.checkpw(rawPassword, user.getPasswordHash())) {
+            throw new RuntimeException("Şifre yanlış");
+        }
+
+        return user;
+    }
 }
