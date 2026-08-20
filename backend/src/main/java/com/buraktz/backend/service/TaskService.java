@@ -37,51 +37,64 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public Task updateTask(Long taskId, String text, boolean completed, String priority, String category) {
+    public Task updateTask(Long taskId, String text, boolean completed, String priority, String category, Long requestingUserId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Görev bulunamadı"));
+
+        if (!task.getUser().getId().equals(requestingUserId)) {
+            throw new RuntimeException("Bu görev sana ait değil");
+        }
 
         task.setText(text);
         task.setCompleted(completed);
         task.setPriority(priority);
         task.setCategory(category);
-
         return taskRepository.save(task);
     }
 
-    public void deleteTask(Long taskId) {
-        taskRepository.deleteById(taskId);
-    }
-
-    public Task addSubtask(Long taskId, String text) {
+    public void deleteTask(Long taskId, Long requestingUserId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Görev bulunamadı"));
 
+        if (!task.getUser().getId().equals(requestingUserId)) {
+            throw new RuntimeException("Bu görev sana ait değil");
+        }
+        taskRepository.deleteById(taskId);
+    }
+
+    public Task addSubtask(Long taskId, String text, Long requestingUserId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Görev bulunamadı"));
+        if (!task.getUser().getId().equals(requestingUserId)) {
+            throw new RuntimeException("Bu görev sana ait değil");
+        }
         Subtask subtask = new Subtask();
         subtask.setText(text);
         subtask.setTask(task);
-
         task.getSubtasks().add(subtask);
         return taskRepository.save(task);
     }
 
-    public Task toggleSubtask(Long taskId, Long subtaskId) {
+    public Task toggleSubtask(Long taskId, Long subtaskId, Long requestingUserId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Görev bulunamadı"));
-
+        if (!task.getUser().getId().equals(requestingUserId)) {
+            throw new RuntimeException("Bu görev sana ait değil");
+        }
         Subtask subtask = task.getSubtasks().stream()
                 .filter(s -> s.getId().equals(subtaskId))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Alt görev bulunamadı"));
-
         subtask.setCompleted(!subtask.isCompleted());
         return taskRepository.save(task);
     }
 
-    public Task deleteSubtask(Long taskId, Long subtaskId) {
+    public Task deleteSubtask(Long taskId, Long subtaskId, Long requestingUserId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Görev bulunamadı"));
-
+        if (!task.getUser().getId().equals(requestingUserId)) {
+            throw new RuntimeException("Bu görev sana ait değil");
+        }
         task.getSubtasks().removeIf(s -> s.getId().equals(subtaskId));
         return taskRepository.save(task);
     }

@@ -7,10 +7,12 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
-    SidebarHeader
+    SidebarHeader,
+    SidebarFooter,
 } from "@/components/ui/sidebar"
-import { Home, BarChart2, Settings } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Home, BarChart2, Settings, LogOut } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "@/context/AuthContext"
 
 const items = [
     { title: "Ana Sayfa", url: "/home", icon: Home },
@@ -19,6 +21,14 @@ const items = [
 ]
 
 export function AppSidebar() {
+    const navigate = useNavigate()
+    const { logout } = useAuth()
+
+    function handleLogout() {
+        logout()
+        navigate("/login")
+    }
+
     return (
         <Sidebar>
             <SidebarHeader>
@@ -48,6 +58,16 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton onClick={handleLogout}>
+                            <LogOut />
+                            <span>Çıkış Yap</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
     )
 }

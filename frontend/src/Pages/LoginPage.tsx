@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 import {
     Card,
@@ -12,9 +13,30 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { loginUser } from "@/api/authApi"
+import { useAuth } from "@/context/AuthContext"
 
 function LoginPage() {
     const navigate = useNavigate()
+    const { login } = useAuth()
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
+
+    async function handleLogin() {
+        setError("")
+        try {
+            const token = await loginUser(email, password)
+            login(token)
+            navigate("/home")
+        } catch (err) {
+            setError("Email veya şifre yanlış")
+        }
+    }
+
+
+
+
     return(
         <div className="flex justify-center pt-25">
         <Card className="w-full max-w-sm">
@@ -26,13 +48,15 @@ function LoginPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form>
+
                     <div className="flex flex-col gap-8">
                         <div className="grid gap-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="m@example.com"
                                 required
                             />
@@ -47,13 +71,20 @@ function LoginPage() {
 
                                 </a>
                             </div>
-                            <Input id="password" type="password" required />
+                            <Input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
                         </div>
+                        {error && <p className="text-sm text-destructive">{error}</p>}
                     </div>
-                </form>
+
             </CardContent>
             <CardFooter className="flex-col gap-2">
-                <Button type="submit" className="w-full">
+                <Button type="button" className="w-full" onClick={handleLogin}>
                     Giriş Yap
                 </Button>
                 <Button

@@ -10,9 +10,11 @@ import org.mindrot.jbcrypt.BCrypt;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
     public User register(String email, String rawPassword) {
@@ -26,7 +28,7 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public User login(String email, String rawPassword) {
+    public String login(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
@@ -34,6 +36,6 @@ public class AuthService {
             throw new RuntimeException("Şifre yanlış");
         }
 
-        return user;
+        return jwtService.generateToken(user.getId());
     }
 }

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { registerUser } from "@/api/authApi"
 
 function RegisterPage() {
     const navigate = useNavigate()
@@ -19,13 +20,17 @@ function RegisterPage() {
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
 
-    function handleRegister() {
+    async function handleRegister() {
         if (password !== confirmPassword) {
             alert("Şifreler eşleşmiyor")
             return
         }
-        // Backend hazır olunca burada gerçek API çağrısı olacak
-        navigate("/login")
+        try {
+            await registerUser(email, password)
+            navigate("/login")
+        } catch (err) {
+            alert("Kayıt başarısız, email zaten kullanılıyor olabilir")
+        }
     }
 
     return (
