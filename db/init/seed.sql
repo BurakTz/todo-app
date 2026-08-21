@@ -34,9 +34,11 @@ CREATE TABLE IF NOT EXISTS subtasks (
     );
 
 -- Demo kullanici: email = demo@example.com, sifre = demo1234
--- (sifre BCrypt ile onceden hash'lenmis, duz metin degil)
+-- (sifre BCrypt ile onceden hash'lenmis, duz metin degil - "$2a$" etiketi
+-- kullaniliyor, cunku backend'deki eski jBCrypt kutuphanesi (org.mindrot:jbcrypt:0.4)
+-- "$2b$" etiketini guvenilir sekilde tanimiyor olabiliyor)
 INSERT INTO users (email, password_hash)
-VALUES ('demo@example.com', '$2b$12$FFywKQ3hPYE4nrssYumCIuw1nHgzT84DnzAQa0HTiqOVnKXrfsMZK')
+VALUES ('demo@example.com', '$2a$12$FFywKQ3hPYE4nrssYumCIuw1nHgzT84DnzAQa0HTiqOVnKXrfsMZK')
     ON CONFLICT (email) DO NOTHING;
 
 -- Demo kullaniciya birkac ornek task ekle

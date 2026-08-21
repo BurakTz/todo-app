@@ -10,7 +10,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins(
+                        "http://localhost:5173",
+                        "https://todo-frontend.jollytree-9726cc3c.polandcentral.azurecontainerapps.io"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
     }

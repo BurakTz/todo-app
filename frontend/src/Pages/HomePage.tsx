@@ -38,12 +38,6 @@ function HomePage({ todos, setTodos }: HomePageProps) {
     const [newPriority, setNewPriority] = useState<Priority>("medium")
     const [newCategory, setNewCategory] = useState<Category | undefined>(undefined)
 
-    // localStorage'a login sırasında kaydettiğimiz userId'yi okuyup number'a çeviriyor.
-    // Backend'e her istek atarken "bu görev hangi kullanıcıya ait" bilgisi bunun için gerekli.
-    function getUserId(): number {
-        return Number(localStorage.getItem("userId"))
-    }
-
     // Checkbox'a tıklanınca çalışır: mevcut todo'yu bulur, completed'i tersine çevirip
     // backend'e günceller, backend'in döndürdüğü GÜNCEL veriyle state'i tazeler
     async function toggleTodo(id: string) {
@@ -55,7 +49,6 @@ function HomePage({ todos, setTodos }: HomePageProps) {
                 completed: !todo.completed,
                 priority: todo.priority,
                 category: todo.category,
-                userId: getUserId(),
             })
             setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)))
         } catch (err) {
@@ -85,7 +78,6 @@ function HomePage({ todos, setTodos }: HomePageProps) {
                 completed: todo.completed,
                 priority,
                 category,
-                userId: getUserId(),
             })
             setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)))
         } catch (err) {
@@ -135,7 +127,6 @@ function HomePage({ todos, setTodos }: HomePageProps) {
                 completed: false,
                 priority: newPriority,
                 category: newCategory,
-                userId: getUserId(),
             })
             setTodos((prev) => [...prev, newTodo])
             setNewText("")

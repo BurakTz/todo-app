@@ -1,35 +1,39 @@
 # ============================================
-# STAGE 1: Build - npm ile statik dosyalari (dist/) uret
+# STAGE 1: Build - Maven ile .jar dosyasini derle
 # ============================================
-FROM node:22-alpine AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Once sadece package.json + package-lock.json'i kopyala.
-# Layer cache sayesinde, kaynak kod degisse bile bagimliliklar
-# ayni kalirsa "npm ci" tekrar calismaz - build hizlanir.
-COPY package.json package-lock.json ./
-RUN npm ci
+# Once sadece pom.xml'i kopyala ve bagimliliklari indir.
+# Bu sayede sadece kaynak kod degisirse (pom.xml degismezse),
+# Docker'in katman onbellegi (layer cache) sayesinde bagimliliklar
+# tekrar tekrar indirilmez - build hizlanir.
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Simdi kaynak kodu kopyala ve derle (tsc -b && vite build)
-COPY . .
-RUN npm run build
+# Simdi kaynak kodu kopyala ve derle.
+# -DskipTests: image build sirasinda testleri tekrar calistirmiyoruz,
+# cunku onlar zaten CI asamasinda (GitHub Actions'ta) calisiyor.
+COPY src ./src
+RUN mvn clean package -DskipTests -B
 
 # ============================================
-# STAGE 2: Serve - statik dosyalari Nginx ile sun
+# STAGE 2: Run - sadece JRE + derlenmis .jar
 # ============================================
-FROM nginx:alpine
+FROM eclipse-temurin:21-jre-alpine
 
-# React Router (react-router-dom) client-side routing kullaniyor,
-# yani /tasks gibi bir path'e direkt girilince Nginx bunu dosya
-# sanip 404 vermemeli, index.html'e yonlendirmeli. Bunun icin
-# ozel bir nginx.conf lazim (asagida ayrica olusturuyoruz).
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Build asamasindan SADECE dist/ klasorunu kopyala.
-# node_modules, kaynak kod, build araclari bu asamaya hic gecmiyor.
-COPY --from=build /app/dist /usr/share/nginx/html
+# Guvenlik icin root olmayan bir kullanici olustur ve onunla calistir
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
 
-EXPOSE 80
+# Build asamasindan SADECE derlenmis .jar dosyasini kopyala.
+# Maven, kaynak kod, .m2 klasoru gibi hicbir sey bu asamaya gecmiyor.
+COPY --from=build /app/target/*.jar app.jar
 
-CMD ["nginx", "-g", "daemon off;"]
+# Spring Boot varsayilan olarak 8080 portunda calisir
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
