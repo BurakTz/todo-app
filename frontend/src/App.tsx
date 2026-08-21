@@ -10,6 +10,7 @@ import type { Todo } from "@/types/todo"
 import { ThemeProvider } from "@/components/theme-provider"
 import { fetchTasks } from "@/api/tasksApi"
 import { AuthProvider, useAuth } from "@/context/AuthContext"
+import ProtectedRoute from "@/components/ProtectedRoute"
 
 function AppRoutes() {
     const [todos, setTodos] = useState<Todo[]>([])
@@ -29,7 +30,7 @@ function AppRoutes() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/" element={<LoginPage />} />
 
-            <Route element={<AppLayout />}>
+            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/home" element={<HomePage todos={todos} setTodos={setTodos} />} />
                 <Route path="/stats" element={<StatsPage todos={todos} />} />
                 <Route path="/settings" element={<SettingsPage />} />
