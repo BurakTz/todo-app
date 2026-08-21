@@ -37,6 +37,8 @@ class BackendApplicationTests {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        // JWT_SECRET de .env'den gelmiyor CI'da - test icin sabit, guvenli bir deger veriyoruz
+        registry.add("jwt.secret", () -> "test-only-secret-key-not-used-in-production-32chars");
     }
 
     @Test
